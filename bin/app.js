@@ -1,21 +1,21 @@
-#!/usr/bin/env node 
+#!/usr/bin/env node
 
 const NodeMediaServer = require('..');
 let argv = require('minimist')(process.argv.slice(2),
   {
-    string:['rtmp_port','http_port','https_port'],
+    string: ['rtmp_port', 'http_port', 'https_port'],
     alias: {
       'rtmp_port': 'r',
       'http_port': 'h',
       'https_port': 's',
     },
-    default:{
+    default: {
       'rtmp_port': 1935,
       'http_port': 8000,
       'https_port': 8443,
     }
   });
-  
+
 if (argv.help) {
   console.log('Usage:');
   console.log('  node-media-server --help // print help information');
@@ -40,15 +40,32 @@ const config = {
   },
   http: {
     port: argv.http_port,
-    mediaroot: __dirname+'/media',
-    webroot: __dirname+'/www',
+    mediaroot: __dirname + '/media',
+    webroot: __dirname + '/www',
     allow_origin: '*',
     api: true
   },
+
+  trans: {
+    ffmpeg: 'C:/ffmpeg/bin/ffmpeg.exe',
+    tasks: [
+      {
+        app: 'live',
+        ac: 'aac',
+        vc: 'libx264',
+        hls: true,
+        hlsFlags: '[hls_time=2:hls_list_size=3:hls_flags=delete_segments]',
+        dash: true,
+        dashFlags: '[f=dash:window_size=3:extra_window_size=5]'
+      }
+    ]
+  },
+
+
   https: {
     port: argv.https_port,
-    key: __dirname+'/privatekey.pem',
-    cert: __dirname+'/certificate.pem',
+    key: __dirname + '/privatekey.pem',
+    cert: __dirname + '/certificate.pem',
   },
   auth: {
     api: true,
